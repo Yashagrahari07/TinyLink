@@ -1,1 +1,47 @@
 @import "tailwindcss";
+
+:root {
+  --color-primary: 35 181 211;
+  --color-primary-dark: 117 171 188;
+  --color-secondary: 162 174 187;
+  --color-accent: 117 171 188;
+  --color-success: 100 180 160;
+  --color-error: 200 100 100;
+  --color-warning: 220 160 100;
+  
+  --bg-primary: 223 224 226;
+  --bg-secondary: 255 255 255;
+  --bg-tertiary: 162 174 187;
+  
+  --text-primary: 7 16 19;
+  --text-secondary: 117 171 188;
+  --text-tertiary: 162 174 187;
+  
+  --border-color: 162 174 187;
+}
+
+.dark {
+  --color-primary: 35 181 211;
+  --color-primary-dark: 117 171 188;
+  --color-secondary: 162 174 187;
+  --color-accent: 117 171 188;
+  --color-success: 100 200 170;
+  --color-error: 220 120 120;
+  --color-warning: 240 180 120;
+  
+  --bg-primary: 7 16 19;
+  --bg-secondary: 15 25 30;
+  --bg-tertiary: 25 35 40;
+  
+  --text-primary: 223 224 226;
+  --text-secondary: 162 174 187;
+  --text-tertiary: 117 171 188;
+  
+  --border-color: 25 35 40;
+}
+
+body {
+  background-color: rgb(var(--bg-primary));
+  color: rgb(var(--text-primary));
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
