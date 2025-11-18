@@ -1,38 +1,21 @@
 import { query, queryOne, queryMany } from '../utils/db.js';
-
-// Generate random code (6-8 characters)
-function generateCode() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const length = Math.floor(Math.random() * 3) + 6; // 6-8 characters
-  let code = '';
-  for (let i = 0; i < length; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return code;
-}
-
-// Validate URL
-function isValidUrl(url) {
-  try {
-    const urlObj = new URL(url);
-    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
-  } catch {
-    return false;
-  }
-}
-
-// Validate code format (6-8 alphanumeric)
-function isValidCode(code) {
-  return /^[A-Za-z0-9]{6,8}$/.test(code);
-}
+import { isValidUrl, isValidCode, generateCode } from '../utils/validation.js';
+import { formatLink, formatError } from '../utils/response.js';
+import { sanitizeUrl, sanitizeCode } from '../utils/sanitize.js';
 
 export async function createLink(req, res, next) {
   try {
-    const { url, code } = req.body;
+    let { url, code } = req.body;
+    
+    // Sanitize inputs
+    url = sanitizeUrl(url);
+    if (code) {
+      code = sanitizeCode(code);
+    }
 
     // Validate URL
     if (!url || !isValidUrl(url)) {
-      return res.status(400).json({ error: 'Invalid URL' });
+      return res.status(400).json(formatError('Invalid URL'));
     }
 
     // Generate or validate code
@@ -40,7 +23,7 @@ export async function createLink(req, res, next) {
     if (!linkCode) {
       linkCode = generateCode();
     } else if (!isValidCode(linkCode)) {
-      return res.status(400).json({ error: 'Code must be 6-8 alphanumeric characters' });
+      return res.status(400).json(formatError('Code must be 6-8 alphanumeric characters'));
     }
 
     // Check for duplicate code
@@ -49,7 +32,7 @@ export async function createLink(req, res, next) {
       [linkCode]
     );
     if (existing) {
-      return res.status(409).json({ error: 'Code already exists' });
+      return res.status(409).json(formatError('Code already exists'));
     }
 
     // Insert link
@@ -61,13 +44,13 @@ export async function createLink(req, res, next) {
     );
 
     const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
-    res.status(201).json({
+    res.status(201).json(formatLink({
       code: result.code,
       url: result.url,
-      shortUrl: `${baseUrl}/${result.code}`,
       clicks: result.clicks,
+      lastClicked: null,
       createdAt: result.createdAt
-    });
+    }, baseUrl));
   } catch (error) {
     next(error);
   }
@@ -87,15 +70,7 @@ export async function getAllLinks(req, res, next) {
     );
 
     const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
-    const formattedLinks = links.map(link => ({
-      code: link.code,
-      url: link.url,
-      shortUrl: `${baseUrl}/${link.code}`,
-      clicks: link.clicks,
-      lastClicked: link.lastClicked,
-      createdAt: link.createdAt
-    }));
-
+    const formattedLinks = links.map(link => formatLink(link, baseUrl));
     res.json(formattedLinks);
   } catch (error) {
     next(error);
@@ -118,18 +93,11 @@ export async function getLinkByCode(req, res, next) {
     );
 
     if (!link) {
-      return res.status(404).json({ error: 'Link not found' });
+      return res.status(404).json(formatError('Link not found'));
     }
 
     const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
-    res.json({
-      code: link.code,
-      url: link.url,
-      shortUrl: `${baseUrl}/${link.code}`,
-      clicks: link.clicks,
-      lastClicked: link.lastClicked,
-      createdAt: link.createdAt
-    });
+    res.json(formatLink(link, baseUrl));
   } catch (error) {
     next(error);
   }
@@ -144,7 +112,7 @@ export async function deleteLink(req, res, next) {
     );
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: 'Link not found' });
+      return res.status(404).json(formatError('Link not found'));
     }
 
     res.json({ message: 'Link deleted successfully' });
@@ -162,7 +130,7 @@ export async function redirectLink(req, res, next) {
     );
 
     if (!link) {
-      return res.status(404).json({ error: 'Link not found' });
+      return res.status(404).json(formatError('Link not found'));
     }
 
     // Increment click count and update last_clicked
