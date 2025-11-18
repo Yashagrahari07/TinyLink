@@ -102,3 +102,81 @@ export async function getAllLinks(req, res, next) {
   }
 }
 
+export async function getLinkByCode(req, res, next) {
+  try {
+    const { code } = req.params;
+    const link = await queryOne(
+      `SELECT 
+        code, 
+        url, 
+        clicks, 
+        last_clicked as "lastClicked", 
+        created_at as "createdAt"
+       FROM links 
+       WHERE code = $1`,
+      [code]
+    );
+
+    if (!link) {
+      return res.status(404).json({ error: 'Link not found' });
+    }
+
+    const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+    res.json({
+      code: link.code,
+      url: link.url,
+      shortUrl: `${baseUrl}/${link.code}`,
+      clicks: link.clicks,
+      lastClicked: link.lastClicked,
+      createdAt: link.createdAt
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteLink(req, res, next) {
+  try {
+    const { code } = req.params;
+    const result = await query(
+      'DELETE FROM links WHERE code = $1',
+      [code]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Link not found' });
+    }
+
+    res.json({ message: 'Link deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function redirectLink(req, res, next) {
+  try {
+    const { code } = req.params;
+    const link = await queryOne(
+      'SELECT url FROM links WHERE code = $1',
+      [code]
+    );
+
+    if (!link) {
+      return res.status(404).json({ error: 'Link not found' });
+    }
+
+    // Increment click count and update last_clicked
+    await query(
+      `UPDATE links 
+       SET clicks = clicks + 1, 
+           last_clicked = CURRENT_TIMESTAMP 
+       WHERE code = $1`,
+      [code]
+    );
+
+    res.redirect(302, link.url);
+  } catch (error) {
+    next(error);
+  }
+}
+

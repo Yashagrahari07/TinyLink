@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import linksRoutes from './routes/links.js';
+import { redirectLink } from './controllers/linksController.js';
 
 dotenv.config();
 
@@ -22,6 +23,15 @@ app.get('/healthz', (req, res) => {
 
 // API routes
 app.use('/api', linksRoutes);
+
+// Redirect endpoint (catch-all, must be last)
+app.get('/:code', (req, res, next) => {
+  // Skip if it's a reserved path
+  if (req.params.code === 'api' || req.params.code === 'healthz') {
+    return next();
+  }
+  redirectLink(req, res, next);
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

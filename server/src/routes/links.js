@@ -1,10 +1,12 @@
 import express from 'express';
-import { createLink, getAllLinks } from '../controllers/linksController.js';
+import { createLink, getAllLinks, getLinkByCode, deleteLink } from '../controllers/linksController.js';
 
 const router = express.Router();
 
 router.post('/links', createLink);
 router.get('/links', getAllLinks);
+router.get('/links/:code', getLinkByCode);
+router.delete('/links/:code', deleteLink);
 
 export default router;
 
