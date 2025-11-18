@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import linksRoutes from './routes/links.js';
 
 dotenv.config();
 
@@ -18,6 +19,9 @@ app.get('/healthz', (req, res) => {
     version: '1.0'
   });
 });
+
+// API routes
+app.use('/api', linksRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
