@@ -120,7 +120,7 @@ export default function AddLinkForm({ onSubmit, onSuccess }) {
       
       {success && createdLink && (
         <div className="mb-4 p-4 rounded-lg bg-[rgb(var(--color-success))] bg-opacity-10 border border-[rgb(var(--color-success))]">
-          <p className="text-[rgb(var(--color-success))] mb-2 font-medium">Link created successfully!</p>
+          <p className="text-[rgb(var(--text-primary))] mb-2 font-medium">Link created successfully!</p>
           <div className="flex items-center gap-2">
             <input
               type="text"

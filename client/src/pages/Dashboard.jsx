@@ -4,11 +4,16 @@ import Card from '../components/Card';
 import LinkTable from '../components/LinkTable';
 import EmptyState from '../components/EmptyState';
 import AddLinkForm from '../components/AddLinkForm';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default function Dashboard() {
   const [links, setLinks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, code: null, url: '' });
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
 
   const fetchLinks = async () => {
     try {
@@ -27,17 +32,39 @@ export default function Dashboard() {
     fetchLinks();
   }, []);
 
-  const handleDelete = async (code) => {
-    if (!window.confirm('Are you sure you want to delete this link?')) {
-      return;
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => setSuccessMessage(null), 3000);
+      return () => clearTimeout(timer);
     }
+  }, [successMessage]);
+
+  const handleDeleteClick = (code, url) => {
+    setDeleteModal({ isOpen: true, code, url });
+    setDeleteError(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.code) return;
+
+    setIsDeleting(true);
+    setDeleteError(null);
 
     try {
-      await api.deleteLink(code);
-      setLinks(links.filter(link => link.code !== code));
+      await api.deleteLink(deleteModal.code);
+      setLinks(links.filter(link => link.code !== deleteModal.code));
+      setSuccessMessage('Link deleted successfully');
+      setDeleteModal({ isOpen: false, code: null, url: '' });
     } catch (err) {
-      alert('Failed to delete link: ' + err.message);
+      setDeleteError(err.message);
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModal({ isOpen: false, code: null, url: '' });
+    setDeleteError(null);
   };
 
   const handleCreateLink = async (url, code) => {
@@ -58,6 +85,12 @@ export default function Dashboard() {
         </Card>
       )}
 
+      {successMessage && (
+        <Card className="mb-6 border-[rgb(var(--color-success))] bg-[rgb(var(--color-success))] bg-opacity-10">
+          <p className="text-[rgb(var(--text-primary))] font-medium">{successMessage}</p>
+        </Card>
+      )}
+
       <AddLinkForm onSubmit={handleCreateLink} onSuccess={handleLinkCreated} />
 
       <Card>
@@ -66,11 +99,24 @@ export default function Dashboard() {
         ) : (
           <LinkTable 
             links={links} 
-            onDelete={handleDelete}
+            onDelete={handleDeleteClick}
             isLoading={isLoading}
           />
         )}
       </Card>
+
+      <ConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Link"
+        message={`Are you sure you want to delete the link for "${deleteModal.url}"? This action cannot be undone.`}
+        confirmText={isDeleting ? 'Deleting...' : 'Delete'}
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={isDeleting}
+        error={deleteError}
+      />
     </div>
   );
 }

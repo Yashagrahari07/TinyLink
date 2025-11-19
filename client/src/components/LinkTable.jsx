@@ -63,15 +63,19 @@ export default function LinkTable({ links, onDelete, isLoading }) {
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    onClick={() => navigator.clipboard.writeText(link.shortUrl)}
+                    onClick={() => {
+                      navigator.clipboard.writeText(link.shortUrl);
+                    }}
                     className="text-xs px-2 py-1"
+                    title="Copy short URL"
                   >
                     Copy
                   </Button>
                   <Button
                     variant="danger"
-                    onClick={() => onDelete(link.code)}
+                    onClick={() => onDelete(link.code, link.url)}
                     className="text-xs px-2 py-1"
+                    title="Delete link"
                   >
                     Delete
                   </Button>
