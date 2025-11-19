@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Button from './Button';
+import LinkCard from './LinkCard';
 
 function formatDate(dateString) {
   if (!dateString) return 'Never';
@@ -60,94 +61,107 @@ export default function LinkTable({ links, onDelete, isLoading, sortColumn, sort
   };
 
   return (
-    <div className="overflow-x-auto -mx-6 px-6">
-      <table className="w-full border-collapse min-w-[600px]">
-        <thead>
-          <tr className="border-b border-[rgb(var(--border-color))]">
-            <th 
-              className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))] cursor-pointer hover:bg-[rgb(var(--bg-secondary))] transition-colors select-none"
-              onClick={() => handleSort('code')}
-            >
-              <div className="flex items-center">
-                Code
-                <SortIcon direction={sortColumn === 'code' ? sortDirection : null} />
-              </div>
-            </th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))]">URL</th>
-            <th 
-              className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))] cursor-pointer hover:bg-[rgb(var(--bg-secondary))] transition-colors select-none"
-              onClick={() => handleSort('clicks')}
-            >
-              <div className="flex items-center">
-                Clicks
-                <SortIcon direction={sortColumn === 'clicks' ? sortDirection : null} />
-              </div>
-            </th>
-            <th 
-              className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))] hidden md:table-cell cursor-pointer hover:bg-[rgb(var(--bg-secondary))] transition-colors select-none"
-              onClick={() => handleSort('lastClicked')}
-            >
-              <div className="flex items-center">
-                Last Clicked
-                <SortIcon direction={sortColumn === 'lastClicked' ? sortDirection : null} />
-              </div>
-            </th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))]">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {links.map((link) => (
-            <tr key={link.code} className="border-b border-[rgb(var(--border-color))] hover:bg-[rgb(var(--bg-secondary))] transition-colors">
-              <td className="py-3 px-4">
-                <Link 
-                  to={`/code/${link.code}`}
-                  className="text-[rgb(var(--color-primary))] hover:underline font-mono text-sm"
-                >
-                  {link.code}
-                </Link>
-              </td>
-              <td className="py-3 px-4">
-                <span 
-                  title={link.url} 
-                  className="text-[rgb(var(--text-primary))] text-sm cursor-help"
-                >
-                  {truncateUrl(link.url, 40)}
-                </span>
-              </td>
-              <td className="py-3 px-4 text-[rgb(var(--text-primary))] text-sm">{link.clicks}</td>
-              <td className="py-3 px-4 text-[rgb(var(--text-secondary))] text-sm hidden md:table-cell">
-                {formatDate(link.lastClicked)}
-              </td>
-              <td className="py-3 px-4">
-                <div className="flex gap-2 flex-wrap">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      navigator.clipboard.writeText(link.shortUrl);
-                      if (onCopySuccess) {
-                        onCopySuccess();
-                      }
-                    }}
-                    className="text-xs px-2 py-1 whitespace-nowrap"
-                    title="Copy short URL"
-                  >
-                    Copy
-                  </Button>
-                  <Button
-                    variant="danger"
-                    onClick={() => onDelete(link.code, link.url)}
-                    className="text-xs px-2 py-1 whitespace-nowrap"
-                    title="Delete link"
-                  >
-                    Delete
-                  </Button>
+    <>
+      <div className="hidden md:block overflow-x-auto -mx-6 px-6">
+        <table className="w-full border-collapse min-w-[600px]">
+          <thead>
+            <tr className="border-b border-[rgb(var(--border-color))]">
+              <th 
+                className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))] cursor-pointer hover:bg-[rgb(var(--bg-secondary))] transition-colors select-none"
+                onClick={() => handleSort('code')}
+              >
+                <div className="flex items-center">
+                  Code
+                  <SortIcon direction={sortColumn === 'code' ? sortDirection : null} />
                 </div>
-              </td>
+              </th>
+              <th className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))]">URL</th>
+              <th 
+                className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))] cursor-pointer hover:bg-[rgb(var(--bg-secondary))] transition-colors select-none"
+                onClick={() => handleSort('clicks')}
+              >
+                <div className="flex items-center">
+                  Clicks
+                  <SortIcon direction={sortColumn === 'clicks' ? sortDirection : null} />
+                </div>
+              </th>
+              <th 
+                className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))] cursor-pointer hover:bg-[rgb(var(--bg-secondary))] transition-colors select-none"
+                onClick={() => handleSort('lastClicked')}
+              >
+                <div className="flex items-center">
+                  Last Clicked
+                  <SortIcon direction={sortColumn === 'lastClicked' ? sortDirection : null} />
+                </div>
+              </th>
+              <th className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))]">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {links.map((link) => (
+              <tr key={link.code} className="border-b border-[rgb(var(--border-color))] hover:bg-[rgb(var(--bg-secondary))] transition-colors">
+                <td className="py-3 px-4">
+                  <Link 
+                    to={`/code/${link.code}`}
+                    className="text-[rgb(var(--color-primary))] hover:underline font-mono text-sm"
+                  >
+                    {link.code}
+                  </Link>
+                </td>
+                <td className="py-3 px-4">
+                  <span 
+                    title={link.url} 
+                    className="text-[rgb(var(--text-primary))] text-sm cursor-help"
+                  >
+                    {truncateUrl(link.url, 40)}
+                  </span>
+                </td>
+                <td className="py-3 px-4 text-[rgb(var(--text-primary))] text-sm">{link.clicks}</td>
+                <td className="py-3 px-4 text-[rgb(var(--text-secondary))] text-sm">
+                  {formatDate(link.lastClicked)}
+                </td>
+                <td className="py-3 px-4">
+                  <div className="flex gap-2 flex-wrap">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        navigator.clipboard.writeText(link.shortUrl);
+                        if (onCopySuccess) {
+                          onCopySuccess();
+                        }
+                      }}
+                      className="text-xs px-3 py-2 min-h-[44px] whitespace-nowrap"
+                      title="Copy short URL"
+                    >
+                      Copy
+                    </Button>
+                    <Button
+                      variant="danger"
+                      onClick={() => onDelete(link.code, link.url)}
+                      className="text-xs px-3 py-2 min-h-[44px] whitespace-nowrap"
+                      title="Delete link"
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="md:hidden space-y-4">
+        {links.map((link) => (
+          <LinkCard
+            key={link.code}
+            link={link}
+            onDelete={onDelete}
+            onCopySuccess={onCopySuccess}
+          />
+        ))}
+      </div>
+    </>
   );
 }
 

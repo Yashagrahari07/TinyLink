@@ -75,3 +75,7 @@ body {
 .slide-in-from-bottom-5 {
   animation: slide-in-from-bottom 0.3s ease-out;
 }
+
+.touch-manipulation {
+  touch-action: manipulation;
+}

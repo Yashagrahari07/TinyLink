@@ -8,12 +8,12 @@ export default function LinkFilters({ sortBy, onSortChange }) {
         value={sortBy}
         onChange={(e) => onSortChange(e.target.value)}
         className="
-          px-3 py-2 rounded-lg border
+          px-3 py-2.5 rounded-lg border text-base
           bg-[rgb(var(--bg-primary))] 
           border-[rgb(var(--border-color))] 
           text-[rgb(var(--text-primary))] 
           focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))]
-          cursor-pointer
+          cursor-pointer min-h-[44px] touch-manipulation
         "
       >
         <option value="created">Date Created</option>

@@ -22,11 +22,12 @@ export default function SearchInput({ value, onChange, placeholder = 'Search by 
         onChange={onChange}
         placeholder={placeholder}
         className="
-          w-full pl-10 pr-10 py-2 rounded-lg border
+          w-full pl-10 pr-10 py-2.5 rounded-lg border text-base
           bg-[rgb(var(--bg-primary))] 
           border-[rgb(var(--border-color))] 
           text-[rgb(var(--text-primary))] 
           focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))]
+          min-h-[44px]
         "
       />
       {value && (

@@ -58,7 +58,7 @@ export default function Stats() {
           >
             ← Back to Dashboard
           </Button>
-          <h2 className="text-3xl font-bold text-[rgb(var(--text-primary))]">Stats for {code}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))]">Stats for {code}</h2>
         </div>
         <Card>
           <div className="space-y-4 animate-fade-in">
@@ -82,7 +82,7 @@ export default function Stats() {
           >
             ← Back to Dashboard
           </Button>
-          <h2 className="text-3xl font-bold text-[rgb(var(--text-primary))]">Stats for {code}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))]">Stats for {code}</h2>
         </div>
         <ErrorMessage
           message={`Link with code "${code}" not found. It may have been deleted or never existed.`}
@@ -122,21 +122,21 @@ export default function Stats() {
             <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] mb-2">
               Short URL
             </label>
-            <div className="flex items-center gap-3">
-              <input
-                type="text"
-                readOnly
-                value={link.shortUrl}
-                className="flex-1 px-4 py-2 bg-[rgb(var(--bg-primary))] rounded-lg border border-[rgb(var(--border-color))] text-[rgb(var(--text-primary))] text-sm"
-              />
-              <Button
-                variant={copied ? 'success' : 'primary'}
-                onClick={handleCopy}
-                className="whitespace-nowrap"
-              >
-                {copied ? 'Copied!' : 'Copy'}
-              </Button>
-            </div>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <input
+              type="text"
+              readOnly
+              value={link.shortUrl}
+              className="flex-1 px-4 py-2.5 bg-[rgb(var(--bg-primary))] rounded-lg border border-[rgb(var(--border-color))] text-[rgb(var(--text-primary))] text-sm min-h-[44px]"
+            />
+            <Button
+              variant={copied ? 'success' : 'primary'}
+              onClick={handleCopy}
+              className="whitespace-nowrap w-full sm:w-auto"
+            >
+              {copied ? 'Copied!' : 'Copy'}
+            </Button>
+          </div>
           </div>
 
           <div>

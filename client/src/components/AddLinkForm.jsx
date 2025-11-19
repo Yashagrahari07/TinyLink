@@ -122,7 +122,7 @@ export default function AddLinkForm({ onSubmit, onSuccess }) {
 
   return (
     <Card className="mb-6">
-      <h3 className="text-xl font-semibold mb-4 text-[rgb(var(--text-primary))]">Create Short Link</h3>
+      <h3 className="text-lg sm:text-xl font-semibold mb-4 text-[rgb(var(--text-primary))]">Create Short Link</h3>
       
       {success && createdLink && (
         <div className="mb-4 p-4 rounded-lg bg-[rgb(var(--color-success))] bg-opacity-10 border border-[rgb(var(--color-success))] animate-fade-in">

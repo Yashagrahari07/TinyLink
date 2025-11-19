@@ -26,11 +26,12 @@ const Input = forwardRef(function Input({
         placeholder={placeholder}
         required={required}
         className={`
-          w-full px-4 py-2 rounded-lg border transition-all duration-200
+          w-full px-4 py-2.5 rounded-lg border transition-all duration-200 text-base
           bg-[rgb(var(--bg-primary))] 
           border-[rgb(var(--border-color))] 
           text-[rgb(var(--text-primary))] 
           focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:border-[rgb(var(--color-primary))]
+          min-h-[44px]
           ${error ? 'border-[rgb(var(--color-error))] focus:ring-[rgb(var(--color-error))]' : ''}
           ${className}
         `}
