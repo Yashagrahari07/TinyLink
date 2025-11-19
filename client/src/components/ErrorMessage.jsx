@@ -19,7 +19,7 @@ export default function ErrorMessage({ message, onRetry, className = '' }) {
           />
         </svg>
         <div className="flex-1">
-          <p className="text-[rgb(var(--color-error))] font-medium mb-2">
+          <p className="text-[rgb(var(--text-primary))] font-medium mb-2">
             {message || 'Something went wrong. Please try again.'}
           </p>
           {onRetry && (
