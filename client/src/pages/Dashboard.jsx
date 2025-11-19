@@ -3,6 +3,7 @@ import { api } from '../utils/api';
 import Card from '../components/Card';
 import LinkTable from '../components/LinkTable';
 import EmptyState from '../components/EmptyState';
+import AddLinkForm from '../components/AddLinkForm';
 
 export default function Dashboard() {
   const [links, setLinks] = useState([]);
@@ -39,6 +40,14 @@ export default function Dashboard() {
     }
   };
 
+  const handleCreateLink = async (url, code) => {
+    return await api.createLink(url, code);
+  };
+
+  const handleLinkCreated = () => {
+    fetchLinks();
+  };
+
   return (
     <div>
       <h2 className="text-3xl font-bold mb-6 text-[rgb(var(--text-primary))]">Dashboard</h2>
@@ -49,9 +58,11 @@ export default function Dashboard() {
         </Card>
       )}
 
+      <AddLinkForm onSubmit={handleCreateLink} onSuccess={handleLinkCreated} />
+
       <Card>
         {links.length === 0 && !isLoading ? (
-          <EmptyState />
+          <EmptyState onAddClick={() => document.querySelector('input[type="url"]')?.focus()} />
         ) : (
           <LinkTable 
             links={links} 
