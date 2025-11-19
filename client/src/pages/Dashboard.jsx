@@ -7,6 +7,7 @@ import AddLinkForm from '../components/AddLinkForm';
 import ConfirmationModal from '../components/ConfirmationModal';
 import SearchInput from '../components/SearchInput';
 import LinkFilters from '../components/LinkFilters';
+import Toast from '../components/Toast';
 
 export default function Dashboard() {
   const [links, setLinks] = useState([]);
@@ -14,6 +15,10 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('created');
+  const [tableSortColumn, setTableSortColumn] = useState(null);
+  const [tableSortDirection, setTableSortDirection] = useState('asc');
+  const [toastMessage, setToastMessage] = useState('');
+  const [showToast, setShowToast] = useState(false);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, code: null, url: '' });
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
@@ -79,6 +84,12 @@ export default function Dashboard() {
     fetchLinks();
   };
 
+  const handleTableSort = (column, direction) => {
+    setTableSortColumn(column);
+    setTableSortDirection(direction);
+    setSortBy('table');
+  };
+
   const filteredAndSortedLinks = useMemo(() => {
     let result = [...links];
 
@@ -91,24 +102,51 @@ export default function Dashboard() {
       });
     }
 
-    result.sort((a, b) => {
-      switch (sortBy) {
-        case 'clicks':
-          return b.clicks - a.clicks;
-        case 'recent':
-          const aDate = a.lastClicked ? new Date(a.lastClicked) : new Date(0);
-          const bDate = b.lastClicked ? new Date(b.lastClicked) : new Date(0);
-          return bDate - aDate;
-        case 'code':
-          return a.code.localeCompare(b.code);
-        case 'created':
-        default:
-          return new Date(b.createdAt) - new Date(a.createdAt);
-      }
-    });
+    if (sortBy === 'table' && tableSortColumn) {
+      result.sort((a, b) => {
+        let comparison = 0;
+        switch (tableSortColumn) {
+          case 'code':
+            comparison = a.code.localeCompare(b.code);
+            break;
+          case 'clicks':
+            comparison = a.clicks - b.clicks;
+            break;
+          case 'lastClicked':
+            const aDate = a.lastClicked ? new Date(a.lastClicked) : new Date(0);
+            const bDate = b.lastClicked ? new Date(b.lastClicked) : new Date(0);
+            comparison = aDate - bDate;
+            break;
+          default:
+            return 0;
+        }
+        return tableSortDirection === 'asc' ? comparison : -comparison;
+      });
+    } else {
+      result.sort((a, b) => {
+        switch (sortBy) {
+          case 'clicks':
+            return b.clicks - a.clicks;
+          case 'recent':
+            const aDate = a.lastClicked ? new Date(a.lastClicked) : new Date(0);
+            const bDate = b.lastClicked ? new Date(b.lastClicked) : new Date(0);
+            return bDate - aDate;
+          case 'code':
+            return a.code.localeCompare(b.code);
+          case 'created':
+          default:
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        }
+      });
+    }
 
     return result;
-  }, [links, searchQuery, sortBy]);
+  }, [links, searchQuery, sortBy, tableSortColumn, tableSortDirection]);
+
+  const handleCopySuccess = () => {
+    setToastMessage('Link copied to clipboard!');
+    setShowToast(true);
+  };
 
   const hasNoResults = !isLoading && links.length > 0 && filteredAndSortedLinks.length === 0;
 
@@ -163,6 +201,10 @@ export default function Dashboard() {
             links={filteredAndSortedLinks} 
             onDelete={handleDeleteClick}
             isLoading={isLoading}
+            sortColumn={tableSortColumn}
+            sortDirection={tableSortDirection}
+            onSort={handleTableSort}
+            onCopySuccess={handleCopySuccess}
           />
         )}
       </Card>
@@ -178,6 +220,12 @@ export default function Dashboard() {
         variant="danger"
         isLoading={isDeleting}
         error={deleteError}
+      />
+
+      <Toast
+        message={toastMessage}
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
       />
     </div>
   );

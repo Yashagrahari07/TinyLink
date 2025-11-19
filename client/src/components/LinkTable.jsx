@@ -12,7 +12,31 @@ function truncateUrl(url, maxLength = 50) {
   return url.substring(0, maxLength) + '...';
 }
 
-export default function LinkTable({ links, onDelete, isLoading }) {
+function SortIcon({ direction }) {
+  if (!direction) {
+    return (
+      <svg className="w-4 h-4 text-[rgb(var(--text-tertiary))] ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+      </svg>
+    );
+  }
+  
+  if (direction === 'asc') {
+    return (
+      <svg className="w-4 h-4 text-[rgb(var(--color-primary))] ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+      </svg>
+    );
+  }
+  
+  return (
+    <svg className="w-4 h-4 text-[rgb(var(--color-primary))] ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+    </svg>
+  );
+}
+
+export default function LinkTable({ links, onDelete, isLoading, sortColumn, sortDirection, onSort, onCopySuccess }) {
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -27,15 +51,47 @@ export default function LinkTable({ links, onDelete, isLoading }) {
     return null;
   }
 
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      onSort(column, sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      onSort(column, 'asc');
+    }
+  };
+
   return (
     <div className="overflow-x-auto -mx-6 px-6">
       <table className="w-full border-collapse min-w-[600px]">
         <thead>
           <tr className="border-b border-[rgb(var(--border-color))]">
-            <th className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))]">Code</th>
+            <th 
+              className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))] cursor-pointer hover:bg-[rgb(var(--bg-secondary))] transition-colors select-none"
+              onClick={() => handleSort('code')}
+            >
+              <div className="flex items-center">
+                Code
+                <SortIcon direction={sortColumn === 'code' ? sortDirection : null} />
+              </div>
+            </th>
             <th className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))]">URL</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))]">Clicks</th>
-            <th className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))] hidden md:table-cell">Last Clicked</th>
+            <th 
+              className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))] cursor-pointer hover:bg-[rgb(var(--bg-secondary))] transition-colors select-none"
+              onClick={() => handleSort('clicks')}
+            >
+              <div className="flex items-center">
+                Clicks
+                <SortIcon direction={sortColumn === 'clicks' ? sortDirection : null} />
+              </div>
+            </th>
+            <th 
+              className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))] hidden md:table-cell cursor-pointer hover:bg-[rgb(var(--bg-secondary))] transition-colors select-none"
+              onClick={() => handleSort('lastClicked')}
+            >
+              <div className="flex items-center">
+                Last Clicked
+                <SortIcon direction={sortColumn === 'lastClicked' ? sortDirection : null} />
+              </div>
+            </th>
             <th className="text-left py-3 px-4 text-sm font-semibold text-[rgb(var(--text-secondary))]">Actions</th>
           </tr>
         </thead>
@@ -51,7 +107,10 @@ export default function LinkTable({ links, onDelete, isLoading }) {
                 </Link>
               </td>
               <td className="py-3 px-4">
-                <span title={link.url} className="text-[rgb(var(--text-primary))] text-sm">
+                <span 
+                  title={link.url} 
+                  className="text-[rgb(var(--text-primary))] text-sm cursor-help"
+                >
                   {truncateUrl(link.url, 40)}
                 </span>
               </td>
@@ -60,13 +119,16 @@ export default function LinkTable({ links, onDelete, isLoading }) {
                 {formatDate(link.lastClicked)}
               </td>
               <td className="py-3 px-4">
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <Button
                     variant="outline"
                     onClick={() => {
                       navigator.clipboard.writeText(link.shortUrl);
+                      if (onCopySuccess) {
+                        onCopySuccess();
+                      }
                     }}
-                    className="text-xs px-2 py-1"
+                    className="text-xs px-2 py-1 whitespace-nowrap"
                     title="Copy short URL"
                   >
                     Copy
@@ -74,7 +136,7 @@ export default function LinkTable({ links, onDelete, isLoading }) {
                   <Button
                     variant="danger"
                     onClick={() => onDelete(link.code, link.url)}
-                    className="text-xs px-2 py-1"
+                    className="text-xs px-2 py-1 whitespace-nowrap"
                     title="Delete link"
                   >
                     Delete
