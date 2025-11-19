@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Input from './Input';
 import Button from './Button';
 import Card from './Card';
@@ -24,6 +24,7 @@ export default function AddLinkForm({ onSubmit, onSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(null);
   const [createdLink, setCreatedLink] = useState(null);
+  const urlInputRef = useRef(null);
 
   const validateUrl = (value) => {
     if (!value) {
@@ -107,10 +108,15 @@ export default function AddLinkForm({ onSubmit, onSuccess }) {
     }
   };
 
+  useEffect(() => {
+    if (urlInputRef.current) {
+      urlInputRef.current.focus();
+    }
+  }, []);
+
   const handleCopy = () => {
     if (createdLink?.shortUrl) {
       navigator.clipboard.writeText(createdLink.shortUrl);
-      alert('Copied to clipboard!');
     }
   };
 
@@ -119,7 +125,7 @@ export default function AddLinkForm({ onSubmit, onSuccess }) {
       <h3 className="text-xl font-semibold mb-4 text-[rgb(var(--text-primary))]">Create Short Link</h3>
       
       {success && createdLink && (
-        <div className="mb-4 p-4 rounded-lg bg-[rgb(var(--color-success))] bg-opacity-10 border border-[rgb(var(--color-success))]">
+        <div className="mb-4 p-4 rounded-lg bg-[rgb(var(--color-success))] bg-opacity-10 border border-[rgb(var(--color-success))] animate-fade-in">
           <p className="text-[rgb(var(--text-primary))] mb-2 font-medium">Link created successfully!</p>
           <div className="flex items-center gap-2">
             <input
@@ -139,6 +145,7 @@ export default function AddLinkForm({ onSubmit, onSuccess }) {
         <div className="flex flex-col md:flex-row gap-4 md:items-end">
           <div className="flex-1 md:flex-1">
             <Input
+              ref={urlInputRef}
               label="URL"
               type="url"
               value={url}
@@ -164,6 +171,7 @@ export default function AddLinkForm({ onSubmit, onSuccess }) {
             <Button
               type="submit"
               disabled={isSubmitting || !!urlError || !!codeError}
+              isLoading={isSubmitting}
               className="w-full md:w-auto md:min-w-[140px]"
             >
               {isSubmitting ? 'Creating...' : 'Create Link'}

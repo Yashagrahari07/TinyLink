@@ -39,8 +39,8 @@ function SortIcon({ direction }) {
 export default function LinkTable({ links, onDelete, isLoading, sortColumn, sortDirection, onSort, onCopySuccess }) {
   if (isLoading) {
     return (
-      <div className="space-y-3">
-        {[1, 2, 3].map(i => (
+      <div className="space-y-3 animate-fade-in">
+        {[1, 2, 3, 4, 5].map(i => (
           <div key={i} className="h-16 bg-[rgb(var(--bg-tertiary))] rounded-lg animate-pulse" />
         ))}
       </div>

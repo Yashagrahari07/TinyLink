@@ -8,6 +8,7 @@ import ConfirmationModal from '../components/ConfirmationModal';
 import SearchInput from '../components/SearchInput';
 import LinkFilters from '../components/LinkFilters';
 import Toast from '../components/Toast';
+import ErrorMessage from '../components/ErrorMessage';
 
 export default function Dashboard() {
   const [links, setLinks] = useState([]);
@@ -155,13 +156,15 @@ export default function Dashboard() {
       <h2 className="text-3xl font-bold mb-6 text-[rgb(var(--text-primary))]">Dashboard</h2>
       
       {error && (
-        <Card className="mb-6 border-[rgb(var(--color-error))]">
-          <p className="text-[rgb(var(--color-error))]">Error: {error}</p>
-        </Card>
+        <ErrorMessage
+          message={`Failed to load links: ${error}`}
+          onRetry={fetchLinks}
+          className="mb-6"
+        />
       )}
 
       {successMessage && (
-        <Card className="mb-6 border-[rgb(var(--color-success))] bg-[rgb(var(--color-success))] bg-opacity-10">
+        <Card className="mb-6 border-[rgb(var(--color-success))] bg-[rgb(var(--color-success))] bg-opacity-10 animate-fade-in">
           <p className="text-[rgb(var(--text-primary))] font-medium">{successMessage}</p>
         </Card>
       )}

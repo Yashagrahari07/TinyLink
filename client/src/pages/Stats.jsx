@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 import Card from '../components/Card';
 import Button from '../components/Button';
+import ErrorMessage from '../components/ErrorMessage';
+import Spinner from '../components/Spinner';
 
 function formatDate(dateString) {
   if (!dateString) return 'Never';
@@ -59,7 +61,7 @@ export default function Stats() {
           <h2 className="text-3xl font-bold text-[rgb(var(--text-primary))]">Stats for {code}</h2>
         </div>
         <Card>
-          <div className="space-y-4">
+          <div className="space-y-4 animate-fade-in">
             <div className="h-6 bg-[rgb(var(--bg-tertiary))] rounded animate-pulse" />
             <div className="h-6 bg-[rgb(var(--bg-tertiary))] rounded animate-pulse w-3/4" />
             <div className="h-6 bg-[rgb(var(--bg-tertiary))] rounded animate-pulse w-1/2" />
@@ -82,17 +84,10 @@ export default function Stats() {
           </Button>
           <h2 className="text-3xl font-bold text-[rgb(var(--text-primary))]">Stats for {code}</h2>
         </div>
-        <Card className="text-center py-12">
-          <h3 className="text-2xl font-semibold mb-4 text-[rgb(var(--text-primary))]">Link Not Found</h3>
-          <p className="text-[rgb(var(--text-secondary))] mb-6">
-            The link with code <span className="font-mono font-semibold text-[rgb(var(--text-primary))]">{code}</span> does not exist.
-          </p>
-          <Link to="/">
-            <Button variant="primary">
-              Go to Dashboard
-            </Button>
-          </Link>
-        </Card>
+        <ErrorMessage
+          message={`Link with code "${code}" not found. It may have been deleted or never existed.`}
+          onRetry={() => window.location.reload()}
+        />
       </div>
     );
   }
