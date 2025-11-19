@@ -3,7 +3,17 @@ import Input from './Input';
 import Button from './Button';
 import Card from './Card';
 
+const RESERVED_CODES = ['api', 'healthz', 'code', 'dashboard', 'stats'];
+
 function isValidUrl(url) {
+  if (!url || typeof url !== 'string') {
+    return false;
+  }
+
+  if (url.length > 2048) {
+    return false;
+  }
+
   try {
     const urlObj = new URL(url);
     return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
@@ -13,6 +23,14 @@ function isValidUrl(url) {
 }
 
 function isValidCode(code) {
+  if (!code || typeof code !== 'string') {
+    return false;
+  }
+
+  if (RESERVED_CODES.includes(code.toLowerCase())) {
+    return false;
+  }
+
   return /^[A-Za-z0-9]{6,8}$/.test(code);
 }
 
@@ -31,19 +49,37 @@ export default function AddLinkForm({ onSubmit, onSuccess }) {
       setUrlError('URL is required');
       return false;
     }
+
+    if (value.length > 2048) {
+      setUrlError('URL is too long. Maximum length is 2048 characters.');
+      return false;
+    }
+
     if (!isValidUrl(value)) {
       setUrlError('Please enter a valid URL (must start with http:// or https://)');
       return false;
     }
+
     setUrlError('');
     return true;
   };
 
   const validateCode = (value) => {
-    if (value && !isValidCode(value)) {
+    if (!value) {
+      setCodeError('');
+      return true;
+    }
+
+    if (RESERVED_CODES.includes(value.toLowerCase())) {
+      setCodeError('This code is reserved and cannot be used');
+      return false;
+    }
+
+    if (!isValidCode(value)) {
       setCodeError('Code must be 6-8 alphanumeric characters');
       return false;
     }
+
     setCodeError('');
     return true;
   };
@@ -96,12 +132,22 @@ export default function AddLinkForm({ onSubmit, onSuccess }) {
       }
     } catch (error) {
       setSuccess(false);
-      if (error.message.includes('already exists')) {
-        setCodeError('This code is already taken');
-      } else if (error.message.includes('Invalid')) {
-        setUrlError(error.message);
+      const errorMessage = error.message || 'Failed to create link. Please try again.';
+      
+      if (error.status === 409 || errorMessage.toLowerCase().includes('already exists')) {
+        setCodeError('This code is already taken. Please choose a different one.');
+      } else if (error.status === 400 || errorMessage.toLowerCase().includes('invalid')) {
+        if (errorMessage.toLowerCase().includes('url')) {
+          setUrlError(errorMessage);
+        } else if (errorMessage.toLowerCase().includes('code')) {
+          setCodeError(errorMessage);
+        } else {
+          setUrlError(errorMessage);
+        }
+      } else if (errorMessage.includes('offline') || errorMessage.includes('network')) {
+        setUrlError(errorMessage);
       } else {
-        setUrlError(error.message);
+        setUrlError(errorMessage);
       }
     } finally {
       setIsSubmitting(false);

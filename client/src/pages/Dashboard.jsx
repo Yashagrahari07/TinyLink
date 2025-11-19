@@ -30,9 +30,11 @@ export default function Dashboard() {
       setIsLoading(true);
       setError(null);
       const data = await api.getAllLinks();
-      setLinks(data);
+      setLinks(Array.isArray(data) ? data : []);
     } catch (err) {
-      setError(err.message);
+      const errorMessage = err.message || 'Failed to load links. Please try again.';
+      setError(errorMessage);
+      setLinks([]);
     } finally {
       setIsLoading(false);
     }
@@ -66,7 +68,14 @@ export default function Dashboard() {
       setSuccessMessage('Link deleted successfully');
       setDeleteModal({ isOpen: false, code: null, url: '' });
     } catch (err) {
-      setDeleteError(err.message);
+      const errorMessage = err.message || 'Failed to delete link. Please try again.';
+      setDeleteError(errorMessage);
+      
+      if (err.status === 404) {
+        setLinks(links.filter(link => link.code !== deleteModal.code));
+        setDeleteModal({ isOpen: false, code: null, url: '' });
+        setSuccessMessage('Link was already deleted');
+      }
     } finally {
       setIsDeleting(false);
     }

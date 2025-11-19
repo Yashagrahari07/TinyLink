@@ -22,21 +22,31 @@ export default function Stats() {
 
   useEffect(() => {
     const fetchLink = async () => {
+      if (!code) {
+        setError('Invalid link code');
+        setIsLoading(false);
+        return;
+      }
+
       try {
         setIsLoading(true);
         setError(null);
         const data = await api.getLinkByCode(code);
-        setLink(data);
+        if (data && data.code) {
+          setLink(data);
+        } else {
+          setError('Link not found');
+        }
       } catch (err) {
-        setError(err.message);
+        const errorMessage = err.message || 'Failed to load link. Please try again.';
+        setError(errorMessage);
+        setLink(null);
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (code) {
-      fetchLink();
-    }
+    fetchLink();
   }, [code]);
 
   const handleCopy = () => {
