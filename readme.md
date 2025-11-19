@@ -206,9 +206,11 @@ The frontend will run on `http://localhost:5173`
    - **Start Command**: `npm start`
 
 3. **Environment Variables**:
+   - `NODE_ENV`: `production`
    - `DATABASE_URL`: Your Neon PostgreSQL connection string
    - `PORT`: `10000` (Render default, or leave empty)
    - `BASE_URL`: Your Render service URL (e.g., `https://trimly-backend.onrender.com`)
+   - `ALLOWED_ORIGINS`: Comma-separated list of allowed frontend URLs (e.g., `https://your-app.vercel.app`)
 
 4. **Database Setup**:
    - Run migration after first deployment:
