@@ -14,7 +14,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "Trimly URL Shortener Backend",
+  "description": "TinyLink URL Shortener Backend",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",

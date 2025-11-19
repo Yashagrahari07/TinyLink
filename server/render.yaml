@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: trimly-backend
+    name: tinylink-backend
     env: node
     buildCommand: npm install
     startCommand: npm start

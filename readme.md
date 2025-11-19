@@ -1,4 +1,4 @@
-# Trimly - URL Shortener
+# TinyLink - URL Shortener
 
 A modern, full-stack URL shortener application built with React, Node.js, Express, and PostgreSQL. Create short links, track clicks, and manage your URLs with a clean, responsive interface.
 
@@ -28,7 +28,7 @@ A modern, full-stack URL shortener application built with React, Node.js, Expres
 ## Project Structure
 
 ```
-Trimly/
+TinyLink/
 ├── client/                 # Frontend React application
 │   ├── src/
 │   │   ├── components/    # Reusable UI components
@@ -62,8 +62,8 @@ Trimly/
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd Trimly
+git clone https://github.com/Yashagrahari07/TinyLink.git
+cd TinyLink
 ```
 
 ### 2. Backend Setup
@@ -199,7 +199,7 @@ The frontend will run on `http://localhost:5173`
    - Connect your repository
 
 2. **Configure Service**:
-   - **Name**: `trimly-backend` (or your preferred name)
+   - **Name**: `tinylink-backend` (or your preferred name)
    - **Root Directory**: `server`
    - **Environment**: `Node`
    - **Build Command**: `npm install`
@@ -209,7 +209,7 @@ The frontend will run on `http://localhost:5173`
    - `NODE_ENV`: `production`
    - `DATABASE_URL`: Your Neon PostgreSQL connection string
    - `PORT`: `10000` (Render default, or leave empty)
-   - `BASE_URL`: Your Render service URL (e.g., `https://trimly-backend.onrender.com`)
+   - `BASE_URL`: Your Render service URL (e.g., `https://tinylink-backend.onrender.com`)
    - `ALLOWED_ORIGINS`: Comma-separated list of allowed frontend URLs (e.g., `https://your-app.vercel.app`)
 
 4. **Database Setup**:
